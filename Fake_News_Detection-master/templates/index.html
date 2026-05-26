@@ -1,92 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>Fake News Detector</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="static/assets/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/animate.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/font.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/li-scroller.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/slick.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/jquery.fancybox.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/theme.css">
-<link rel="stylesheet" type="text/css" href="static/assets/css/style.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-<div id="preloader">
-  <div id="status">&nbsp;</div>
-</div>
- 
-<a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
 <div class="container">
-  <header id="header">
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12">
+  <section class="hero">
+    <div class="brand-row">
+      <div class="brand"><span class="brand-dot"></span> Fake News Detector</div>
+      <div class="status-chip">Fast prediction, same model behavior</div>
+    </div>
 
- <section id="newsSection">
-    <div class="row">
-      <div class="col-lg-12 col-md-12">
-        <div class="latest_newsarea"> <span>Latest News</span>
-          <ul id="ticker01" class="news_sticker">
-            <li><a href="#"><img src="static/images/site_logo.jpg" alt="">Example News</a></li>
-          </ul>
-        </div>
+    <h1>Check a claim before you share it.</h1>
+    <p>
+      Paste a headline, article, or social post and let the classifier analyze the text.
+      The workflow stays the same, but the interface is now brighter, cleaner, and easier to read.
+    </p>
+
+    <div class="hero-grid">
+      <div class="metric">
+        <span>Input</span>
+        <strong>News text paste area</strong>
+      </div>
+      <div class="metric">
+        <span>Output</span>
+        <strong>Fake or real prediction</strong>
+      </div>
+      <div class="metric">
+        <span>Flow</span>
+        <strong>Flask form submission</strong>
       </div>
     </div>
   </section>
 
-        <div class="header_top">
-          <div class="header_top_left">
-          </div>
+  <main class="main-grid">
+    <section class="panel">
+      <h2>How it works</h2>
+      <p>
+        The app keeps the same prediction route and uses your existing trained model behind the scenes.
+      </p>
+      <div class="info-list">
+        <div class="info-item">
+          <h3>1. Paste text</h3>
+          <p>Drop in the full article, a paragraph, or just the claim you want to verify.</p>
+        </div>
+        <div class="info-item">
+          <h3>2. Predict</h3>
+          <p>Press the button and the Flask backend returns the model decision.</p>
+        </div>
+        <div class="info-item">
+          <h3>3. Review result</h3>
+          <p>Use the highlighted response to quickly see whether the content looks fake or real.</p>
         </div>
       </div>
-      <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="header_bottom">
-          <div class="logo_area"><a href="index.html" class="logo"><img src="static/images/logo.jpg" alt=""></a></div>
-          <div class="add_banner"><a href="#"><img src="static/images/addbanner_728x90_V1.jpg" alt=""></a></div>
-        </div>
+    </section>
+
+    <section class="panel">
+      <h2>Paste your news text</h2>
+      <form action="{{ url_for('predict') }}" method="POST">
+        <label for="news">News content</label>
+        <textarea
+          name="news"
+          id="news"
+          rows="10"
+          placeholder="Paste the article, headline, or post here..."
+        ></textarea>
+        <button type="submit">Predict</button>
+      </form>
+
+      {% if prediction %}
+      <div class="result-card {% if 'REAL' in prediction %}real{% elif 'FAKE' in prediction %}fake{% endif %}">
+        <span class="result-label">Prediction</span>
+        <p>{{ prediction }}</p>
       </div>
-    </div>
-  </header>
+      {% endif %}
+    </section>
+  </main>
 
-  <section id="sliderSection">
-    <div class="row">
-      <div class="col-lg-8 col-md-8 col-sm-8">
-        <div class="slick_slider">
-          <div class="single_iteam"> <alt="">
-            <div class="slider_article">
-		  <div class="form-group">
-                  <h2><span>Paste Your News Text Here: </span></h2>
-                <form action="{{ url_for('predict')}}" method="POST" >
-                  <textarea name="news" id="cmtx_comment" class="form-control" rows="10" ></textarea>
-                  <button type="submit" class="btn btn-primary btn-lg">Predict</button>
-                </form>
-                {% if prediction %}
-                <h4 style="font-size:25px;">{{ prediction }}</h4>
-                {% endif %}
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="footer_bottom">
-      <p class="copyright">Copyright &copy; 2021 Fake News Detector</p>
-  </div>
+  <footer class="footer">
+    <p>Copyright &copy; 2021 Fake News Detector</p>
+  </footer>
 </div>
-<script src="static/assets/js/jquery.min.js"></script>
-<script src="static/assets/js/wow.min.js"></script>
-<script src="static/assets/js/bootstrap.min.js"></script>
-<script src="static/assets/js/slick.min.js"></script>
-<script src="static/assets/js/jquery.li-scroller.1.0.js"></script>
-<script src="static/assets/js/jquery.newsTicker.min.js"></script>
-<script src="static/assets/js/jquery.fancybox.pack.js"></script>
-<script src="static/assets/js/custom.js"></script>
 </body>
 </html>
