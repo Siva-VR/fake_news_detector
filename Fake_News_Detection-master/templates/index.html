@@ -61,7 +61,7 @@
 
     <section class="panel">
       <h2>Paste your news text</h2>
-      <form action="{{ url_for('predict') }}" method="POST">
+      <form id="predictForm" action="{{ url_for('predict') }}" method="POST">
         <label for="news">News content</label>
         <textarea
           name="news"
@@ -69,7 +69,13 @@
           rows="10"
           placeholder="Paste the article, headline, or post here..."
         ></textarea>
-        <button type="submit">Predict</button>
+
+        <div id="validationUI" style="margin-top:10px;">
+          <span id="charCount" style="color:#666">0 chars</span>
+          <div id="validationMsg" role="status" aria-live="polite" style="margin-top:8px;color:#b00"></div>
+        </div>
+
+        <button type="submit" id="submitBtn" style="margin-top:12px;">Predict</button>
       </form>
 
       {% if prediction %}
@@ -85,5 +91,65 @@
     <p>Copyright &copy; 2021 Fake News Detector</p>
   </footer>
 </div>
+</div>
+<script>
+  (function(){
+    const news = document.getElementById('news');
+    const validationMsg = document.getElementById('validationMsg');
+    const charCount = document.getElementById('charCount');
+    const form = document.getElementById('predictForm');
+
+    function updateCount(){
+      const n = news.value.length;
+      charCount.textContent = n + ' chars';
+    }
+
+    function validateText(){
+      const text = news.value.trim();
+      updateCount();
+      if(!text){
+        validationMsg.style.color = '#b00';
+        validationMsg.textContent = 'Please paste the news text before validating.';
+        return false;
+      }
+      if(text.length < 15){
+        validationMsg.style.color = '#b00';
+        validationMsg.textContent = 'Text is too short — paste at least 15 characters.';
+        return false;
+      }
+      if(text.length > 20000){
+        validationMsg.style.color = '#b00';
+        validationMsg.textContent = 'Text is too long — please reduce to under 20,000 characters.';
+        return false;
+      }
+      // basic heuristic: require at least 3 words
+      if(text.split(/\s+/).filter(Boolean).length < 3){
+        validationMsg.style.color = '#b00';
+        validationMsg.textContent = 'Please provide more content (at least 3 words).';
+        return false;
+      }
+      validationMsg.style.color = '#080';
+      validationMsg.textContent = 'Validation OK — you can submit for prediction.';
+      return true;
+    }
+
+    news.addEventListener('input', function(){
+      updateCount();
+      // clear message when editing
+      validationMsg.textContent = '';
+    });
+
+    form.addEventListener('submit', function(e){
+      // prevent accidental empty submissions
+      if(!validateText()){
+        e.preventDefault();
+        news.focus();
+      }
+    });
+
+    // initial count update
+    updateCount();
+  })();
+</script>
 </body>
 </html>
